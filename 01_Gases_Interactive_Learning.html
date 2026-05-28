@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gases — Interactive Learning (3rd ESO)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --bg:#0f172a; --panel:#1e293b; --accent:#38bdf8; --accent2:#fbbf24;
+    --text:#e2e8f0; --muted:#94a3b8; --good:#22c55e; --bad:#ef4444;
+    --card:#172033;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;}
+  header{background:linear-gradient(135deg,#1e3a8a,#0c4a6e);padding:30px 20px;text-align:center;border-bottom:3px solid var(--accent);}
+  header h1{margin:0;font-size:2.2em;}
+  header p{margin:6px 0 0;color:#cbd5e1;}
+  nav{position:sticky;top:0;background:#0c1424;padding:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;border-bottom:1px solid #334155;z-index:10;}
+  nav a{color:var(--accent);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:0.9em;border:1px solid #334155;}
+  nav a:hover{background:var(--accent);color:#0f172a;}
+  main{max-width:1100px;margin:0 auto;padding:30px 20px;}
+  section{background:var(--panel);border-radius:14px;padding:25px;margin-bottom:30px;box-shadow:0 4px 20px rgba(0,0,0,0.4);}
+  h2{color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:8px;margin-top:0;}
+  h3{color:var(--accent2);margin-top:24px;}
+  .key-box{background:var(--card);border-left:4px solid var(--accent2);padding:12px 16px;margin:12px 0;border-radius:6px;}
+  .formula{background:#0c1424;padding:10px 14px;text-align:center;font-size:1.3em;border-radius:8px;margin:10px 0;color:var(--accent2);font-weight:bold;border:1px solid #334155;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media(max-width:700px){.grid2{grid-template-columns:1fr;}}
+  .sim-box{background:var(--card);padding:18px;border-radius:10px;border:1px solid #334155;}
+  .sim-box label{display:block;margin:8px 0 4px;color:var(--muted);font-size:0.9em;}
+  .sim-box input[type=range]{width:100%;}
+  .sim-box .val{color:var(--accent2);font-weight:bold;font-size:1.1em;}
+  canvas{background:#0c1424;border-radius:8px;display:block;margin:10px auto;border:1px solid #334155;}
+  table{width:100%;border-collapse:collapse;margin:10px 0;}
+  th,td{border:1px solid #334155;padding:8px;text-align:center;}
+  th{background:#1e293b;color:var(--accent);}
+  td{background:#0c1424;}
+  .converter{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:10px 0;}
+  .converter input,.converter select{padding:8px;background:#0c1424;color:var(--text);border:1px solid #334155;border-radius:6px;font-size:1em;}
+  .arrow{font-size:1.5em;color:var(--accent);}
+  .worked{background:#0c1424;border-left:4px solid var(--good);padding:14px;margin:14px 0;border-radius:6px;}
+  .worked .step{margin:8px 0;}
+  .worked .step b{color:var(--accent2);}
+  ul{padding-left:20px;}
+  .tip{background:#1e3a8a;border-radius:6px;padding:10px;color:#dbeafe;margin:10px 0;}
+  .warning{background:#7c2d12;border-radius:6px;padding:10px;color:#fed7aa;margin:10px 0;}
+  footer{text-align:center;padding:20px;color:var(--muted);font-size:0.9em;}
+  .law-graph{margin:10px auto;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>GASES — Interactive Learning</h1>
+  <p>Physics & Chemistry · 3rd ESO · Madrid Curriculum</p>
+</header>
+
+<nav>
+  <a href="#intro">1. Matter</a>
+  <a href="#kmt">2. KMT</a>
+  <a href="#pressure">3. Pressure</a>
+  <a href="#units">4. Units</a>
+  <a href="#boyle">5. Boyle</a>
+  <a href="#charles">6. Charles</a>
+  <a href="#gaylussac">7. Gay-Lussac</a>
+  <a href="#combined">8. Combined</a>
+  <a href="#examples">9. Examples</a>
+</nav>
+
+<main>
+
+<!-- ============ 1. INTRO ============ -->
+<section id="intro">
+  <h2>1. States of Matter</h2>
+  <p>Matter exists in three main physical states. Each has different properties because the particles behave differently.</p>
+
+  <table>
+    <tr><th>State</th><th>Shape</th><th>Volume</th><th>Particles</th><th>Examples</th></tr>
+    <tr><td><b>Solid</b></td><td>Fixed</td><td>Fixed</td><td>Tightly packed, vibrate</td><td>ice, iron, wood</td></tr>
+    <tr><td><b>Liquid</b></td><td>Takes shape of container</td><td>Fixed</td><td>Close together, slide</td><td>water, oil, mercury</td></tr>
+    <tr><td><b>Gas</b></td><td>Takes shape of container</td><td>Fills container</td><td>Far apart, move freely</td><td>O₂, N₂, CO₂, He</td></tr>
+  </table>
+
+  <h3>Particle animation — click a state</h3>
+  <div style="text-align:center;">
+    <button onclick="setState('solid')" style="padding:8px 16px;margin:4px;background:var(--accent);border:none;border-radius:6px;cursor:pointer;font-weight:bold;">SOLID</button>
+    <button onclick="setState('liquid')" style="padding:8px 16px;margin:4px;background:var(--accent);border:none;border-radius:6px;cursor:pointer;font-weight:bold;">LIQUID</button>
+    <button onclick="setState('gas')" style="padding:8px 16px;margin:4px;background:var(--accent);border:none;border-radius:6px;cursor:pointer;font-weight:bold;">GAS</button>
+  </div>
+  <canvas id="stateCanvas" width="500" height="280"></canvas>
+</section>
+
+<!-- ============ 2. KMT ============ -->
+<section id="kmt">
+  <h2>2. Kinetic Molecular Theory (KMT)</h2>
+  <p>The KMT explains the behaviour of gases using these ideas:</p>
+  <ul>
+    <li>Gases are made of tiny <b>particles</b> in constant, random motion.</li>
+    <li>Particles are very <b>far apart</b> compared to their size.</li>
+    <li>They <b>collide</b> with each other and with the container walls — these collisions are <b>elastic</b> (no energy is lost).</li>
+    <li><b>Temperature</b> is a measure of the <b>average kinetic energy</b> of the particles.</li>
+    <li><b>Absolute zero (0 K)</b> = the temperature at which all particle motion stops.</li>
+  </ul>
+
+  <div class="key-box">
+    <b>Pressure (KMT view):</b> when gas particles collide with the walls of the container, they push them. The total push per unit area is the <b>pressure</b>.<br>
+    More collisions or stronger collisions → more pressure.
+  </div>
+
+  <h3>Live particle simulator</h3>
+  <div class="sim-box">
+    <label>Temperature: <span class="val" id="kmtT">300</span> K</label>
+    <input type="range" id="kmtTemp" min="50" max="800" value="300" oninput="updateKMT()">
+    <label>Number of particles: <span class="val" id="kmtN">30</span></label>
+    <input type="range" id="kmtNum" min="5" max="80" value="30" oninput="updateKMT()">
+    <canvas id="kmtCanvas" width="500" height="280"></canvas>
+    <p style="text-align:center;color:var(--muted);">Collisions per second: <span class="val" id="kmtColl">0</span></p>
+  </div>
+</section>
+
+<!-- ============ 3. PRESSURE ============ -->
+<section id="pressure">
+  <h2>3. Pressure</h2>
+  <p>Pressure is the <b>force</b> applied <b>per unit of area</b>.</p>
+  <div class="formula">P = F / S</div>
+  <ul>
+    <li><b>F</b> = force (N, newtons)</li>
+    <li><b>S</b> = surface area (m²)</li>
+    <li><b>P</b> = pressure (Pa, pascals = N/m²)</li>
+  </ul>
+
+  <div class="tip">
+    The <b>same force</b> over a <b>smaller area</b> produces <b>greater pressure</b>. That's why a sharp needle pierces easily but a finger does not.
+  </div>
+
+  <h3>Atmospheric pressure</h3>
+  <p>The atmosphere is a thick layer of air around Earth. Its weight produces pressure on everything on the surface.</p>
+  <ul>
+    <li>Standard atmospheric pressure at sea level = <b>1 atm</b> = <b>101 325 Pa</b> ≈ <b>760 mmHg</b> ≈ <b>1013 mbar</b>.</li>
+    <li>Pressure <b>decreases</b> with altitude (less air above us).</li>
+  </ul>
+</section>
+
+<!-- ============ 4. UNITS ============ -->
+<section id="units">
+  <h2>4. Unit Conversions</h2>
+
+  <h3>Equivalences you must memorise</h3>
+  <div class="key-box">
+    <b>Pressure</b><br>
+    1 atm = 101 325 Pa = 760 mmHg = 1013 mbar = 1013 hPa
+  </div>
+  <div class="key-box">
+    <b>Temperature</b><br>
+    T(K) = t(°C) + 273
+  </div>
+  <div class="key-box">
+    <b>Volume</b><br>
+    1 L = 1 000 mL = 1 dm³ = 1 000 cm³<br>
+    1 m³ = 1 000 L
+  </div>
+
+  <h3>Live pressure converter</h3>
+  <div class="sim-box">
+    <div class="converter">
+      <input type="number" id="convInput" value="1" oninput="convertP()">
+      <select id="convFrom" onchange="convertP()">
+        <option value="atm">atm</option>
+        <option value="Pa">Pa</option>
+        <option value="mmHg">mmHg</option>
+        <option value="mbar">mbar</option>
+        <option value="hPa">hPa</option>
+      </select>
+      <span class="arrow">→</span>
+      <input type="number" id="convOutput" readonly>
+      <select id="convTo" onchange="convertP()">
+        <option value="Pa">Pa</option>
+        <option value="atm">atm</option>
+        <option value="mmHg">mmHg</option>
+        <option value="mbar">mbar</option>
+        <option value="hPa">hPa</option>
+      </select>
+    </div>
+  </div>
+
+  <h3>Temperature converter</h3>
+  <div class="sim-box">
+    <div class="converter">
+      <input type="number" id="tIn" value="25" oninput="convertT()">
+      <select id="tFrom" onchange="convertT()">
+        <option value="C">°C</option>
+        <option value="K">K</option>
+      </select>
+      <span class="arrow">→</span>
+      <input type="number" id="tOut" readonly>
+      <select id="tTo" onchange="convertT()">
+        <option value="K">K</option>
+        <option value="C">°C</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. BOYLE ============ -->
+<section id="boyle">
+  <h2>5. Boyle–Mariotte Law (P–V)</h2>
+  <p>Describes the relationship between <b>pressure</b> and <b>volume</b> when <b>temperature is constant</b>.</p>
+  <div class="key-box">
+    <b>If T is constant, P and V are <span style="color:var(--bad);">inversely proportional</span>.</b><br>
+    When you compress a gas (V decreases), pressure increases. And vice versa.
+  </div>
+  <div class="formula">P · V = constant &nbsp; → &nbsp; P₁ · V₁ = P₂ · V₂</div>
+
+  <h3>Live simulator — push the piston</h3>
+  <div class="sim-box">
+    <label>Volume: <span class="val" id="boyleV">2.0</span> L</label>
+    <input type="range" id="boyleVol" min="0.5" max="5" step="0.1" value="2.0" oninput="updateBoyle()">
+    <p>Pressure: <span class="val" id="boyleP">2.00</span> atm (assuming P₁V₁ = 4)</p>
+    <canvas id="boyleCanvas" width="500" height="240"></canvas>
+  </div>
+</section>
+
+<!-- ============ 6. CHARLES ============ -->
+<section id="charles">
+  <h2>6. Charles's Law (V–T)</h2>
+  <p>Describes the relationship between <b>volume</b> and <b>temperature</b> when <b>pressure is constant</b>.</p>
+  <div class="key-box">
+    <b>If P is constant, V and T are <span style="color:var(--good);">directly proportional</span>.</b><br>
+    When you heat a gas, it expands. When you cool it, it contracts.
+  </div>
+  <div class="formula">V / T = constant &nbsp; → &nbsp; V₁ / T₁ = V₂ / T₂</div>
+  <div class="warning">⚠ Temperature <b>must</b> be in <b>kelvin (K)</b>!</div>
+
+  <h3>Live simulator — heat the balloon</h3>
+  <div class="sim-box">
+    <label>Temperature: <span class="val" id="charlesT">300</span> K (<span id="charlesC">27</span> °C)</label>
+    <input type="range" id="charlesTemp" min="150" max="600" value="300" oninput="updateCharles()">
+    <p>Volume: <span class="val" id="charlesV">2.00</span> L</p>
+    <canvas id="charlesCanvas" width="500" height="280"></canvas>
+  </div>
+</section>
+
+<!-- ============ 7. GAY-LUSSAC ============ -->
+<section id="gaylussac">
+  <h2>7. Gay-Lussac's Law (P–T)</h2>
+  <p>Describes the relationship between <b>pressure</b> and <b>temperature</b> when <b>volume is constant</b>.</p>
+  <div class="key-box">
+    <b>If V is constant, P and T are <span style="color:var(--good);">directly proportional</span>.</b><br>
+    Heating a sealed container increases pressure; cooling decreases pressure.
+  </div>
+  <div class="formula">P / T = constant &nbsp; → &nbsp; P₁ / T₁ = P₂ / T₂</div>
+  <div class="warning">⚠ Temperature <b>must</b> be in <b>kelvin (K)</b>!</div>
+
+  <h3>Live simulator — heat the sealed tank</h3>
+  <div class="sim-box">
+    <label>Temperature: <span class="val" id="glT">300</span> K</label>
+    <input type="range" id="glTemp" min="150" max="900" value="300" oninput="updateGL()">
+    <p>Pressure: <span class="val" id="glP">1.00</span> atm</p>
+    <canvas id="glCanvas" width="500" height="240"></canvas>
+  </div>
+</section>
+
+<!-- ============ 8. COMBINED ============ -->
+<section id="combined">
+  <h2>8. Combined Gas Law</h2>
+  <p>If <b>all three</b> variables (P, V, T) change at once, we combine the three previous laws:</p>
+  <div class="formula">(P₁ · V₁) / T₁ = (P₂ · V₂) / T₂</div>
+  <p>This is the most general formula and works for any gas as long as the amount of gas doesn't change.</p>
+  <div class="tip">If T is constant, T₁ = T₂ and the formula collapses to Boyle's law. If P is constant, you get Charles's law. If V is constant, you get Gay-Lussac's law.</div>
+</section>
+
+<!-- ============ 9. EXAMPLES ============ -->
+<section id="examples">
+  <h2>9. Worked Examples</h2>
+
+  <div class="worked">
+    <b>Example 1 — Boyle</b><br>
+    A gas occupies 6 L at 2 atm. If the temperature does not change and we compress it to 1.5 L, what is the new pressure?
+    <div class="step"><b>1)</b> Identify law: T constant → Boyle.</div>
+    <div class="step"><b>2)</b> Data: P₁ = 2 atm, V₁ = 6 L, V₂ = 1.5 L, P₂ = ?</div>
+    <div class="step"><b>3)</b> P₁·V₁ = P₂·V₂ → 2 · 6 = P₂ · 1.5</div>
+    <div class="step"><b>4)</b> P₂ = 12 / 1.5 = <b>8 atm</b></div>
+  </div>
+
+  <div class="worked">
+    <b>Example 2 — Charles</b><br>
+    A balloon has 3 L of gas at 27 °C. What volume will it have at 127 °C, at the same pressure?
+    <div class="step"><b>1)</b> Identify law: P constant → Charles.</div>
+    <div class="step"><b>2)</b> Convert: T₁ = 27 + 273 = 300 K, T₂ = 127 + 273 = 400 K.</div>
+    <div class="step"><b>3)</b> V₁/T₁ = V₂/T₂ → 3/300 = V₂/400</div>
+    <div class="step"><b>4)</b> V₂ = (3 · 400) / 300 = <b>4 L</b></div>
+  </div>
+
+  <div class="worked">
+    <b>Example 3 — Gay-Lussac (fire extinguisher)</b><br>
+    A 3 L CO₂ cylinder withstands up to 15 atm. At 27 °C it is at 2 atm. What is the maximum temperature it can reach before bursting?
+    <div class="step"><b>1)</b> Identify law: V constant → Gay-Lussac.</div>
+    <div class="step"><b>2)</b> Convert: T₁ = 27 + 273 = 300 K. P₁ = 2 atm, P₂ = 15 atm.</div>
+    <div class="step"><b>3)</b> P₁/T₁ = P₂/T₂ → 2/300 = 15/T₂</div>
+    <div class="step"><b>4)</b> T₂ = (15 · 300) / 2 = 2250 K → 2250 − 273 = <b>1977 °C</b></div>
+  </div>
+
+  <div class="worked">
+    <b>Example 4 — Unit conversion</b><br>
+    Express 1140 mmHg in SI units (Pa).
+    <div class="step"><b>1)</b> Equivalence: 760 mmHg = 101 325 Pa.</div>
+    <div class="step"><b>2)</b> 1140 mmHg · (101 325 Pa / 760 mmHg)</div>
+    <div class="step"><b>3)</b> = <b>151 987.5 Pa ≈ 1.52 · 10⁵ Pa</b></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>Interactive material based on the unit "Gases" — 3rd ESO Physics & Chemistry. Built for self-study and class support.</p>
+</footer>
+
+<script>
+/* ===== 1. STATES OF MATTER ANIMATION ===== */
+const stateCanvas = document.getElementById('stateCanvas');
+const sctx = stateCanvas.getContext('2d');
+let state = 'gas';
+let stateParticles = [];
+
+function initStateParticles(){
+  stateParticles = [];
+  for(let i=0;i<40;i++){
+    stateParticles.push({
+      x: 50 + Math.random()*400,
+      y: 30 + Math.random()*220,
+      vx: (Math.random()-0.5)*3,
+      vy: (Math.random()-0.5)*3,
+      r: 8
+    });
+  }
+}
+
+function setState(s){state = s;}
+
+function drawState(){
+  sctx.clearRect(0,0,500,280);
+  // border
+  sctx.strokeStyle = '#38bdf8'; sctx.lineWidth = 2;
+  sctx.strokeRect(20,20,460,240);
+
+  for(let p of stateParticles){
+    if(state==='gas'){
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<28||p.x>472){p.vx*=-1;}
+      if(p.y<28||p.y>252){p.vy*=-1;}
+    } else if(state==='liquid'){
+      p.x += p.vx*0.5; p.y += p.vy*0.5;
+      // settle to bottom half
+      if(p.y<140) p.vy += 0.05;
+      if(p.x<28||p.x>472){p.vx*=-1;}
+      if(p.y>252){p.vy = -Math.abs(p.vy)*0.5;}
+      if(p.y<140){p.vy = Math.abs(p.vy);}
+    } else { // solid
+      // small vibration around grid
+      if(!p.gx){
+        const row = Math.floor((p.idx||stateParticles.indexOf(p))/8);
+        const col = (p.idx||stateParticles.indexOf(p))%8;
+        p.gx = 70 + col*50; p.gy = 70 + row*40;
+      }
+      p.x = p.gx + (Math.random()-0.5)*4;
+      p.y = p.gy + (Math.random()-0.5)*4;
+    }
+    sctx.fillStyle = state==='gas'?'#38bdf8':state==='liquid'?'#0ea5e9':'#fbbf24';
+    sctx.beginPath();
+    sctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    sctx.fill();
+  }
+  sctx.fillStyle = '#fff';
+  sctx.font = 'bold 16px sans-serif';
+  sctx.fillText(state.toUpperCase(), 30, 40);
+}
+initStateParticles();
+setInterval(drawState, 40);
+
+/* ===== 2. KMT SIMULATOR ===== */
+const kmtCanvas = document.getElementById('kmtCanvas');
+const kctx = kmtCanvas.getContext('2d');
+let kmtParticles = [];
+let kmtCollisions = 0;
+let kmtLastCount = 0;
+
+function initKMT(n){
+  kmtParticles = [];
+  for(let i=0;i<n;i++){
+    kmtParticles.push({
+      x: 20 + Math.random()*460,
+      y: 20 + Math.random()*240,
+      vx: (Math.random()-0.5)*4,
+      vy: (Math.random()-0.5)*4,
+      r: 6
+    });
+  }
+}
+
+function updateKMT(){
+  const T = +document.getElementById('kmtTemp').value;
+  const N = +document.getElementById('kmtNum').value;
+  document.getElementById('kmtT').textContent = T;
+  document.getElementById('kmtN').textContent = N;
+  if(kmtParticles.length !== N) initKMT(N);
+  // velocity scales with sqrt(T)
+  const factor = Math.sqrt(T/300);
+  for(let p of kmtParticles){
+    const speed = Math.sqrt(p.vx*p.vx+p.vy*p.vy);
+    const target = 2*factor;
+    if(speed>0){
+      p.vx = p.vx/speed*target;
+      p.vy = p.vy/speed*target;
+    }
+  }
+}
+
+function drawKMT(){
+  kctx.clearRect(0,0,500,280);
+  kctx.strokeStyle = '#fbbf24'; kctx.lineWidth = 2;
+  kctx.strokeRect(10,10,480,260);
+  for(let p of kmtParticles){
+    p.x += p.vx; p.y += p.vy;
+    if(p.x<16){p.x=16;p.vx*=-1;kmtCollisions++;}
+    if(p.x>484){p.x=484;p.vx*=-1;kmtCollisions++;}
+    if(p.y<16){p.y=16;p.vy*=-1;kmtCollisions++;}
+    if(p.y>264){p.y=264;p.vy*=-1;kmtCollisions++;}
+    kctx.fillStyle = '#38bdf8';
+    kctx.beginPath(); kctx.arc(p.x,p.y,p.r,0,Math.PI*2); kctx.fill();
+  }
+}
+initKMT(30);
+setInterval(drawKMT, 25);
+setInterval(()=>{
+  document.getElementById('kmtColl').textContent = (kmtCollisions-kmtLastCount);
+  kmtLastCount = kmtCollisions;
+}, 1000);
+
+/* ===== 4. CONVERTERS ===== */
+const P_TO_PA = {
+  atm: 101325, Pa: 1, mmHg: 101325/760, mbar: 100, hPa: 100
+};
+function convertP(){
+  const v = +document.getElementById('convInput').value;
+  const f = document.getElementById('convFrom').value;
+  const t = document.getElementById('convTo').value;
+  const pa = v * P_TO_PA[f];
+  const out = pa / P_TO_PA[t];
+  document.getElementById('convOutput').value = out.toFixed(4);
+}
+convertP();
+
+function convertT(){
+  const v = +document.getElementById('tIn').value;
+  const f = document.getElementById('tFrom').value;
+  const t = document.getElementById('tTo').value;
+  let out;
+  if(f===t) out = v;
+  else if(f==='C') out = v + 273;
+  else out = v - 273;
+  document.getElementById('tOut').value = out.toFixed(2);
+}
+convertT();
+
+/* ===== 5. BOYLE ===== */
+const boyleCanvas = document.getElementById('boyleCanvas');
+const bctx = boyleCanvas.getContext('2d');
+let boyleParticles = [];
+for(let i=0;i<25;i++){
+  boyleParticles.push({x:50+Math.random()*300,y:30+Math.random()*180,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3});
+}
+
+function updateBoyle(){
+  const V = +document.getElementById('boyleVol').value;
+  document.getElementById('boyleV').textContent = V.toFixed(1);
+  // assume P1*V1 = 4 (e.g., 2 atm * 2 L)
+  const P = 4/V;
+  document.getElementById('boyleP').textContent = P.toFixed(2);
+}
+
+function drawBoyle(){
+  bctx.clearRect(0,0,500,240);
+  const V = +document.getElementById('boyleVol').value;
+  // container width based on volume (0.5..5 -> 80..450)
+  const width = 80 + ((V-0.5)/4.5)*370;
+  // draw container
+  bctx.strokeStyle = '#38bdf8'; bctx.lineWidth = 3;
+  bctx.strokeRect(20,30,width,180);
+  // draw piston
+  bctx.fillStyle = '#fbbf24';
+  bctx.fillRect(20+width-10,30,12,180);
+  bctx.fillStyle = '#94a3b8';
+  bctx.fillRect(20+width+2,100,40,40);
+  // particles bounded by width
+  for(let p of boyleParticles){
+    p.x += p.vx; p.y += p.vy;
+    if(p.x<26||p.x>20+width-12){p.vx*=-1;p.x=Math.max(26,Math.min(20+width-12,p.x));}
+    if(p.y<36||p.y>204){p.vy*=-1;p.y=Math.max(36,Math.min(204,p.y));}
+    bctx.fillStyle = '#38bdf8';
+    bctx.beginPath(); bctx.arc(p.x,p.y,5,0,Math.PI*2); bctx.fill();
+  }
+  bctx.fillStyle = '#fff'; bctx.font = '14px sans-serif';
+  bctx.fillText('← push piston to compress', 20, 225);
+}
+updateBoyle();
+setInterval(drawBoyle, 30);
+
+/* ===== 6. CHARLES ===== */
+const charlesCanvas = document.getElementById('charlesCanvas');
+const cctx = charlesCanvas.getContext('2d');
+let charlesParticles = [];
+for(let i=0;i<25;i++){
+  charlesParticles.push({x:0,y:0,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3});
+}
+
+function updateCharles(){
+  const T = +document.getElementById('charlesTemp').value;
+  document.getElementById('charlesT').textContent = T;
+  document.getElementById('charlesC').textContent = T-273;
+  // assume V1/T1 = 2/300 -> V = 2*T/300
+  const V = 2*T/300;
+  document.getElementById('charlesV').textContent = V.toFixed(2);
+}
+
+function drawCharles(){
+  cctx.clearRect(0,0,500,280);
+  const T = +document.getElementById('charlesTemp').value;
+  // balloon radius from V
+  const V = 2*T/300;
+  const radius = 40 + V*15;
+  // draw balloon
+  cctx.fillStyle = T>500?'#ef4444':T>350?'#f59e0b':T>250?'#38bdf8':'#60a5fa';
+  cctx.beginPath();
+  cctx.ellipse(250,140,radius,radius*1.1,0,0,Math.PI*2);
+  cctx.fill();
+  // knot
+  cctx.fillStyle = '#94a3b8';
+  cctx.beginPath();
+  cctx.moveTo(245,140+radius*1.1);
+  cctx.lineTo(255,140+radius*1.1);
+  cctx.lineTo(252,140+radius*1.1+12);
+  cctx.lineTo(248,140+radius*1.1+12);
+  cctx.closePath(); cctx.fill();
+  // particles inside
+  for(let p of charlesParticles){
+    p.x += p.vx*(T/300);
+    p.y += p.vy*(T/300);
+    const dx=p.x, dy=p.y;
+    const d = Math.sqrt(dx*dx+dy*dy);
+    if(d>radius-10){
+      p.vx*=-1; p.vy*=-1;
+      p.x=p.x*0.9; p.y=p.y*0.9;
+    }
+    cctx.fillStyle = '#fff';
+    cctx.beginPath(); cctx.arc(250+p.x,140+p.y,3,0,Math.PI*2); cctx.fill();
+  }
+}
+updateCharles();
+setInterval(drawCharles, 30);
+
+/* ===== 7. GAY-LUSSAC ===== */
+const glCanvas = document.getElementById('glCanvas');
+const gctx = glCanvas.getContext('2d');
+let glParticles = [];
+for(let i=0;i<30;i++){
+  glParticles.push({x:80+Math.random()*340,y:30+Math.random()*180,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3});
+}
+
+function updateGL(){
+  const T = +document.getElementById('glTemp').value;
+  document.getElementById('glT').textContent = T;
+  // assume P1/T1 = 1/300 -> P = T/300
+  const P = T/300;
+  document.getElementById('glP').textContent = P.toFixed(2);
+}
+
+function drawGL(){
+  gctx.clearRect(0,0,500,240);
+  const T = +document.getElementById('glTemp').value;
+  const factor = T/300;
+  // sealed container fixed width
+  gctx.strokeStyle = T>700?'#ef4444':T>500?'#f59e0b':'#38bdf8';
+  gctx.lineWidth = 4;
+  gctx.strokeRect(60,20,380,200);
+  // pressure indicator
+  gctx.fillStyle = T>700?'#ef4444':T>500?'#f59e0b':'#22c55e';
+  gctx.font = 'bold 20px sans-serif';
+  gctx.fillText('P = ' + (T/300).toFixed(2) + ' atm', 180, 13);
+  // particles
+  for(let p of glParticles){
+    p.x += p.vx*factor; p.y += p.vy*factor;
+    if(p.x<66||p.x>434){p.vx*=-1;p.x=Math.max(66,Math.min(434,p.x));}
+    if(p.y<26||p.y>214){p.vy*=-1;p.y=Math.max(26,Math.min(214,p.y));}
+    gctx.fillStyle = '#fbbf24';
+    gctx.beginPath(); gctx.arc(p.x,p.y,4,0,Math.PI*2); gctx.fill();
+  }
+}
+updateGL();
+setInterval(drawGL, 30);
+
+</script>
+</body>
+</html>

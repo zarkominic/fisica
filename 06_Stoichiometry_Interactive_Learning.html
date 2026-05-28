@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stoichiometry — Interactive Learning (3rd ESO)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --bg:#0f172a; --panel:#1e293b; --accent:#a855f7; --accent2:#fbbf24;
+    --text:#e2e8f0; --muted:#94a3b8; --good:#22c55e; --bad:#ef4444;
+    --card:#172033;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;}
+  header{background:linear-gradient(135deg,#581c87,#312e81);padding:30px 20px;text-align:center;border-bottom:3px solid var(--accent);}
+  header h1{margin:0;font-size:2.2em;}
+  header p{margin:6px 0 0;color:#e9d5ff;}
+  nav{position:sticky;top:0;background:#0c1424;padding:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;border-bottom:1px solid #334155;z-index:10;}
+  nav a{color:var(--accent);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:0.9em;border:1px solid #334155;}
+  nav a:hover{background:var(--accent);color:#0f172a;}
+  main{max-width:1100px;margin:0 auto;padding:30px 20px;}
+  section{background:var(--panel);border-radius:14px;padding:25px;margin-bottom:30px;box-shadow:0 4px 20px rgba(0,0,0,0.4);}
+  h2{color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:8px;margin-top:0;}
+  h3{color:var(--accent2);margin-top:24px;}
+  .key-box{background:var(--card);border-left:4px solid var(--accent2);padding:12px 16px;margin:12px 0;border-radius:6px;}
+  .formula{background:#0c1424;padding:10px 14px;text-align:center;font-size:1.3em;border-radius:8px;margin:10px 0;color:var(--accent2);font-weight:bold;border:1px solid #334155;}
+  .sim-box{background:var(--card);padding:18px;border-radius:10px;border:1px solid #334155;}
+  .sim-box label{display:block;margin:8px 0 4px;color:var(--muted);font-size:0.9em;}
+  .sim-box input[type=range]{width:100%;}
+  .sim-box .val{color:var(--accent2);font-weight:bold;font-size:1.1em;}
+  table{width:100%;border-collapse:collapse;margin:10px 0;}
+  th,td{border:1px solid #334155;padding:8px;text-align:center;}
+  th{background:#1e293b;color:var(--accent);}
+  td{background:#0c1424;}
+  .worked{background:#0c1424;border-left:4px solid var(--good);padding:14px;margin:14px 0;border-radius:6px;}
+  .worked .step{margin:8px 0;}
+  .worked .step b{color:var(--accent2);}
+  .reaction{background:#172033;padding:14px;border-radius:8px;text-align:center;font-size:1.2em;margin:10px 0;font-family:'Courier New',monospace;}
+  .balanced{color:var(--good);font-weight:bold;}
+  .unbalanced{color:var(--bad);font-weight:bold;}
+  ul{padding-left:20px;}
+  .tip{background:#312e81;border-radius:6px;padding:10px;color:#e9d5ff;margin:10px 0;}
+  .warning{background:#7c2d12;border-radius:6px;padding:10px;color:#fed7aa;margin:10px 0;}
+  footer{text-align:center;padding:20px;color:var(--muted);font-size:0.9em;}
+  .mass-calc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0;}
+  @media(max-width:700px){.mass-calc{grid-template-columns:1fr;}}
+  .calc-input{padding:10px;background:#0c1424;color:var(--text);border:1px solid #334155;border-radius:6px;font-size:1em;width:100%;}
+  button{background:var(--accent);color:#fff;border:none;padding:10px 20px;font-weight:bold;border-radius:6px;cursor:pointer;}
+  button:hover{opacity:0.85;}
+  .result-box{background:#064e3b;border-left:4px solid var(--good);padding:12px;margin:10px 0;border-radius:6px;color:#a7f3d0;font-weight:bold;}
+  .atom{display:inline-block;width:36px;height:36px;border-radius:50%;text-align:center;line-height:36px;font-weight:bold;margin:2px;color:#fff;}
+  .atom-C{background:#374151;}
+  .atom-H{background:#e5e7eb;color:#000;}
+  .atom-O{background:#ef4444;}
+  .atom-N{background:#3b82f6;}
+  .atom-Mg{background:#a3e635;color:#000;}
+  .balance-anim{text-align:center;padding:14px;background:#0c1424;border-radius:8px;margin:10px 0;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>STOICHIOMETRY — Interactive Learning</h1>
+  <p>Physics &amp; Chemistry · 3rd ESO · Madrid Curriculum</p>
+</header>
+
+<nav>
+  <a href="#intro">1. Chemical Reactions</a>
+  <a href="#balance">2. Balancing</a>
+  <a href="#mass">3. Conservation</a>
+  <a href="#proust">4. Proust</a>
+  <a href="#molar">5. Molar Mass</a>
+  <a href="#stoich">6. Stoichiometry</a>
+  <a href="#examples">7. Examples</a>
+</nav>
+
+<main>
+
+<!-- ============ 1. INTRO ============ -->
+<section id="intro">
+  <h2>1. Chemical Reactions</h2>
+  <p>A <b>chemical reaction</b> is a process in which one or more substances (<b>reactants</b>) are transformed into different substances (<b>products</b>).</p>
+  <div class="formula">REACTANTS → PRODUCTS</div>
+  <ul>
+    <li>Atoms are <b>not created or destroyed</b> — they just rearrange.</li>
+    <li>Old bonds are broken; new bonds form.</li>
+    <li>The number and type of atoms must be the same on both sides.</li>
+  </ul>
+
+  <div class="key-box">
+    <b>Example — combustion of butane (camping gas):</b>
+    <div class="reaction">2 C<sub>4</sub>H<sub>10</sub> + 13 O<sub>2</sub> → 8 CO<sub>2</sub> + 10 H<sub>2</sub>O</div>
+    Butane reacts with oxygen to form carbon dioxide and water.
+  </div>
+</section>
+
+<!-- ============ 2. BALANCING ============ -->
+<section id="balance">
+  <h2>2. Balancing Chemical Equations</h2>
+  <p>To balance a reaction we add <b>coefficients</b> (numbers in front of the formulas) so that the number of atoms of each element is equal on both sides.</p>
+
+  <div class="warning">⚠ You can only change <b>coefficients</b>, never the subscripts inside the formulas. Changing the subscript changes the substance!</div>
+
+  <h3>Step-by-step method</h3>
+  <ul>
+    <li>Count atoms of each element on both sides.</li>
+    <li>Balance metals first, then non-metals, then H, then O last.</li>
+    <li>If you need a fraction, multiply all coefficients to clear it.</li>
+    <li>Check the final count.</li>
+  </ul>
+
+  <h3>Live balance checker</h3>
+  <div class="sim-box">
+    <p>Try balancing the burning of methane (natural gas):</p>
+    <div class="reaction" id="rxnDisplay">
+      <span id="c1">__</span> CH<sub>4</sub> + <span id="c2">__</span> O<sub>2</sub> → <span id="c3">__</span> CO<sub>2</sub> + <span id="c4">__</span> H<sub>2</sub>O
+    </div>
+    <div class="mass-calc">
+      <div>
+        <label>CH₄ coefficient: <span class="val" id="vc1">1</span></label>
+        <input type="range" id="b1" min="1" max="6" value="1" oninput="updateBalance()">
+      </div>
+      <div>
+        <label>O₂ coefficient: <span class="val" id="vc2">1</span></label>
+        <input type="range" id="b2" min="1" max="6" value="1" oninput="updateBalance()">
+      </div>
+      <div>
+        <label>CO₂ coefficient: <span class="val" id="vc3">1</span></label>
+        <input type="range" id="b3" min="1" max="6" value="1" oninput="updateBalance()">
+      </div>
+      <div>
+        <label>H₂O coefficient: <span class="val" id="vc4">1</span></label>
+        <input type="range" id="b4" min="1" max="6" value="1" oninput="updateBalance()">
+      </div>
+    </div>
+    <table>
+      <tr><th>Element</th><th>Reactants</th><th>Products</th><th>Status</th></tr>
+      <tr><td>C</td><td id="rC">1</td><td id="pC">1</td><td id="sC">⚠</td></tr>
+      <tr><td>H</td><td id="rH">4</td><td id="pH">2</td><td id="sH">❌</td></tr>
+      <tr><td>O</td><td id="rO">2</td><td id="pO">3</td><td id="sO">❌</td></tr>
+    </table>
+    <p id="balanceMsg" style="text-align:center;font-size:1.1em;font-weight:bold;"></p>
+  </div>
+</section>
+
+<!-- ============ 3. CONSERVATION OF MASS ============ -->
+<section id="mass">
+  <h2>3. Law of Conservation of Mass (Lavoisier)</h2>
+  <div class="key-box">
+    <b>In a chemical reaction, the total mass of the reactants equals the total mass of the products.</b>
+  </div>
+  <p>This is true because atoms are not destroyed — they only rearrange. The number of atoms of each element on the left equals the number on the right.</p>
+
+  <div class="formula">m (reactants) = m (products)</div>
+
+  <h3>Example — butane combustion</h3>
+  <div class="reaction">2 C<sub>4</sub>H<sub>10</sub> + 13 O<sub>2</sub> → 8 CO<sub>2</sub> + 10 H<sub>2</sub>O</div>
+  <table>
+    <tr><th>Substance</th><th>Molar mass (g/mol)</th><th>× coefficient</th><th>Total mass (g)</th></tr>
+    <tr><td>C₄H₁₀</td><td>58</td><td>× 2</td><td>116</td></tr>
+    <tr><td>O₂</td><td>32</td><td>× 13</td><td>416</td></tr>
+    <tr style="background:#1e3a8a;color:#fff;"><th colspan="3">Total reactants</th><th>532 g</th></tr>
+    <tr><td>CO₂</td><td>44</td><td>× 8</td><td>352</td></tr>
+    <tr><td>H₂O</td><td>18</td><td>× 10</td><td>180</td></tr>
+    <tr style="background:#1e3a8a;color:#fff;"><th colspan="3">Total products</th><th>532 g</th></tr>
+  </table>
+  <div class="result-box">✅ Total reactants = Total products = 532 g</div>
+</section>
+
+<!-- ============ 4. PROUST ============ -->
+<section id="proust">
+  <h2>4. Proust's Law of Definite Proportions</h2>
+  <div class="key-box">
+    <b>When two or more elements combine to form a compound, they always do so in a fixed mass ratio.</b>
+  </div>
+  <p>For example, water is always 2 g of H : 16 g of O (ratio 1 : 8). It doesn't matter where the water comes from — rain, sea, tap, or a chemical reaction — the proportion is always the same.</p>
+
+  <div class="tip">This is why the same equation always gives the same mass ratios between reactants and products — and that's what allows us to do stoichiometry calculations.</div>
+</section>
+
+<!-- ============ 5. MOLAR MASS ============ -->
+<section id="molar">
+  <h2>5. Molar Mass</h2>
+  <p>The <b>molar mass (M)</b> of a substance is the mass (in grams) of one mole of that substance. It is obtained by adding the atomic masses of all the atoms in its formula.</p>
+
+  <div class="formula">M(compound) = Σ (atomic mass × number of atoms)</div>
+
+  <h3>Common atomic masses</h3>
+  <table>
+    <tr><th>H</th><th>C</th><th>N</th><th>O</th><th>Mg</th><th>Cl</th><th>Na</th><th>Ca</th></tr>
+    <tr><td>1</td><td>12</td><td>14</td><td>16</td><td>24.3</td><td>35.5</td><td>23</td><td>40</td></tr>
+  </table>
+
+  <h3>Examples</h3>
+  <ul>
+    <li><b>H₂O</b>: 2·1 + 16 = <b>18 g/mol</b></li>
+    <li><b>CO₂</b>: 12 + 2·16 = <b>44 g/mol</b></li>
+    <li><b>O₂</b>: 2·16 = <b>32 g/mol</b></li>
+    <li><b>C₄H₁₀</b> (butane): 4·12 + 10·1 = <b>58 g/mol</b></li>
+    <li><b>MgO</b>: 24.3 + 16 = <b>40.3 g/mol</b></li>
+    <li><b>NH₃</b>: 14 + 3·1 = <b>17 g/mol</b></li>
+  </ul>
+
+  <h3>Live molar mass calculator</h3>
+  <div class="sim-box">
+    <p>Type a formula using atomic counts (e.g. <code>C4H10</code>, <code>H2O</code>, <code>CaCO3</code>, <code>MgO</code>):</p>
+    <input type="text" class="calc-input" id="molarInput" value="C4H10" oninput="calcMolar()">
+    <p>Molar mass: <span class="val" id="molarOut">58</span> g/mol</p>
+    <p id="molarBreak" style="color:var(--muted);font-size:0.9em;"></p>
+  </div>
+</section>
+
+<!-- ============ 6. STOICHIOMETRY ============ -->
+<section id="stoich">
+  <h2>6. Stoichiometric Mass Calculations</h2>
+  <p>Knowing the balanced equation and the molar masses, we can calculate the mass of any reactant or product if we know one of them.</p>
+
+  <h3>The 3 steps</h3>
+  <ol>
+    <li><b>Write and balance</b> the chemical equation.</li>
+    <li><b>Calculate molar masses</b> and write the stoichiometry in grams.</li>
+    <li><b>Use a conversion factor</b> (proportion / rule of three) to find the unknown.</li>
+  </ol>
+
+  <h3>Live stoichiometry calculator (Mg + O₂)</h3>
+  <div class="sim-box">
+    <div class="reaction">2 Mg + O<sub>2</sub> → 2 MgO</div>
+    <p>Stoichiometric proportion in mass: 48.6 g Mg + 32 g O₂ → 80.6 g MgO</p>
+    <label>Mass of Mg (g):</label>
+    <input type="number" class="calc-input" id="mgIn" value="8" oninput="calcStoich()">
+    <div class="mass-calc">
+      <div class="result-box">O₂ needed: <span id="o2Out">5.27</span> g</div>
+      <div class="result-box">MgO produced: <span id="mgoOut">13.27</span> g</div>
+    </div>
+    <p style="color:var(--muted);font-size:0.9em;">Try with 8 g of Mg → 5.3 g O₂ and 13.3 g MgO (the worked example in the textbook).</p>
+  </div>
+</section>
+
+<!-- ============ 7. EXAMPLES ============ -->
+<section id="examples">
+  <h2>7. Worked Examples</h2>
+
+  <div class="worked">
+    <b>Example 1 — Magnesium burning</b><br>
+    Magnesium reacts with oxygen to form magnesium oxide. Calculate: (a) the mass of oxygen needed to react with 8 g of Mg; (b) the mass of MgO produced.
+    <div class="step"><b>1)</b> Equation: 2 Mg + O₂ → 2 MgO.</div>
+    <div class="step"><b>2)</b> Molar masses: M(Mg)=24.3, M(O₂)=32, M(MgO)=40.3.</div>
+    <div class="step"><b>3)</b> Stoichiometry in grams: 2·24.3 = 48.6 g Mg + 32 g O₂ → 2·40.3 = 80.6 g MgO.</div>
+    <div class="step"><b>4)</b> (a) 8 g Mg · (32 g O₂ / 48.6 g Mg) = <b>5.3 g O₂</b>.</div>
+    <div class="step"><b>5)</b> (b) 8 g Mg · (80.6 g MgO / 48.6 g Mg) = <b>13.3 g MgO</b>.</div>
+    <div class="step"><b>Check (mass conservation):</b> 8 + 5.3 = 13.3 ✅</div>
+  </div>
+
+  <div class="worked">
+    <b>Example 2 — Ammonia decomposition</b><br>
+    Ammonia decomposes: NH₃ → N₂ + H₂. Calculate how many grams of ammonia decompose to produce 7 g of N₂, and the mass of hydrogen produced.
+    <div class="step"><b>1)</b> Balanced: 2 NH₃ → N₂ + 3 H₂.</div>
+    <div class="step"><b>2)</b> Molar masses: M(NH₃)=17, M(N₂)=28, M(H₂)=2.</div>
+    <div class="step"><b>3)</b> Stoichiometry in grams: 2·17 = 34 g NH₃ → 28 g N₂ + 3·2 = 6 g H₂.</div>
+    <div class="step"><b>4)</b> NH₃ needed: 7 g N₂ · (34 g NH₃ / 28 g N₂) = <b>8.5 g NH₃</b>.</div>
+    <div class="step"><b>5)</b> H₂ produced: 7 g N₂ · (6 g H₂ / 28 g N₂) = <b>1.5 g H₂</b>.</div>
+    <div class="step"><b>Check:</b> 8.5 = 7 + 1.5 ✅</div>
+  </div>
+
+  <div class="worked">
+    <b>Example 3 — Butane combustion</b><br>
+    How many grams of CO₂ are produced when 29 g of butane burn completely?
+    <div class="step"><b>1)</b> 2 C₄H₁₀ + 13 O₂ → 8 CO₂ + 10 H₂O.</div>
+    <div class="step"><b>2)</b> M(C₄H₁₀)=58, M(CO₂)=44.</div>
+    <div class="step"><b>3)</b> Stoichiometry: 2·58 = 116 g butane → 8·44 = 352 g CO₂.</div>
+    <div class="step"><b>4)</b> 29 g · (352 / 116) = <b>88 g CO₂</b>.</div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>Interactive material based on the unit "Calculations in chemical reactions" — 3rd ESO. Practise with the interactive page, then take the self-test.</p>
+</footer>
+
+<script>
+/* ===== 2. BALANCE CHECKER (CH4 + O2 → CO2 + H2O) ===== */
+function updateBalance(){
+  const c1 = +document.getElementById('b1').value;
+  const c2 = +document.getElementById('b2').value;
+  const c3 = +document.getElementById('b3').value;
+  const c4 = +document.getElementById('b4').value;
+  document.getElementById('vc1').textContent = c1;
+  document.getElementById('vc2').textContent = c2;
+  document.getElementById('vc3').textContent = c3;
+  document.getElementById('vc4').textContent = c4;
+  document.getElementById('c1').textContent = c1;
+  document.getElementById('c2').textContent = c2;
+  document.getElementById('c3').textContent = c3;
+  document.getElementById('c4').textContent = c4;
+
+  // C: c1*1 vs c3*1
+  const rC = c1, pC = c3;
+  // H: c1*4 vs c4*2
+  const rH = c1*4, pH = c4*2;
+  // O: c2*2 vs c3*2+c4*1
+  const rO = c2*2, pO = c3*2 + c4;
+
+  document.getElementById('rC').textContent = rC;
+  document.getElementById('pC').textContent = pC;
+  document.getElementById('rH').textContent = rH;
+  document.getElementById('pH').textContent = pH;
+  document.getElementById('rO').textContent = rO;
+  document.getElementById('pO').textContent = pO;
+  document.getElementById('sC').textContent = rC===pC?'✅':'❌';
+  document.getElementById('sH').textContent = rH===pH?'✅':'❌';
+  document.getElementById('sO').textContent = rO===pO?'✅':'❌';
+
+  const allOK = (rC===pC && rH===pH && rO===pO);
+  const msg = document.getElementById('balanceMsg');
+  if(allOK){
+    msg.innerHTML = '<span class="balanced">✅ Balanced! The equation conserves atoms.</span>';
+  } else {
+    msg.innerHTML = '<span class="unbalanced">⚠ Not balanced yet. Solution: 1 CH₄ + 2 O₂ → 1 CO₂ + 2 H₂O.</span>';
+  }
+}
+updateBalance();
+
+/* ===== 5. MOLAR MASS CALCULATOR ===== */
+const ATOMIC = {
+  H:1, He:4, Li:7, Be:9, B:11, C:12, N:14, O:16, F:19, Ne:20,
+  Na:23, Mg:24.3, Al:27, Si:28, P:31, S:32, Cl:35.5, Ar:40,
+  K:39, Ca:40, Fe:56, Cu:63.5, Zn:65, Br:80, Ag:108, I:127,
+  Pb:207, Hg:200.6
+};
+function calcMolar(){
+  const formula = document.getElementById('molarInput').value.trim();
+  const re = /([A-Z][a-z]?)(\d*)/g;
+  let m, total = 0, breakdown = [];
+  let valid = false;
+  while((m = re.exec(formula)) !== null){
+    if(!m[1]) continue;
+    const el = m[1], n = m[2]?+m[2]:1;
+    if(!(el in ATOMIC)){
+      breakdown.push(`<span style="color:#ef4444;">Unknown: ${el}</span>`);
+      continue;
+    }
+    valid = true;
+    const contrib = ATOMIC[el]*n;
+    total += contrib;
+    breakdown.push(`${el}: ${n}×${ATOMIC[el]} = ${contrib}`);
+  }
+  document.getElementById('molarOut').textContent = valid ? total.toFixed(2).replace(/\.00$/,'') : '?';
+  document.getElementById('molarBreak').innerHTML = breakdown.join(' &nbsp; · &nbsp; ');
+}
+calcMolar();
+
+/* ===== 6. STOICHIOMETRY CALC (Mg + O2) ===== */
+function calcStoich(){
+  const mMg = +document.getElementById('mgIn').value || 0;
+  // 48.6 g Mg : 32 g O2 : 80.6 g MgO
+  const o2 = mMg * 32 / 48.6;
+  const mgo = mMg * 80.6 / 48.6;
+  document.getElementById('o2Out').textContent = o2.toFixed(2);
+  document.getElementById('mgoOut').textContent = mgo.toFixed(2);
+}
+calcStoich();
+</script>
+</body>
+</html>

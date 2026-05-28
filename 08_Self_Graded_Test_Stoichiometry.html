@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stoichiometry — Self-Graded Test (3rd ESO)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;line-height:1.55;}
+  header{background:linear-gradient(135deg,#581c87,#312e81);padding:30px 20px;text-align:center;border-bottom:3px solid #a855f7;}
+  header h1{margin:0;font-size:2.1em;}
+  header p{margin:6px 0 0;color:#e9d5ff;}
+  main{max-width:900px;margin:0 auto;padding:25px 20px;}
+  .intro{background:#1e293b;border-radius:12px;padding:20px;margin-bottom:25px;}
+  .intro h2{color:#a855f7;margin-top:0;}
+  .question{background:#1e293b;border-radius:12px;padding:20px;margin-bottom:18px;border-left:5px solid #a855f7;box-shadow:0 4px 14px rgba(0,0,0,0.3);}
+  .qnum{display:inline-block;background:#a855f7;color:#fff;font-weight:bold;padding:3px 10px;border-radius:5px;font-size:0.85em;margin-bottom:8px;}
+  .qtype{display:inline-block;background:#0ea5e9;color:#fff;font-weight:bold;padding:3px 10px;border-radius:5px;font-size:0.75em;margin-left:6px;}
+  .qtext{font-size:1.05em;margin:8px 0 14px;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .options label{background:#0c1424;padding:10px 14px;border-radius:8px;cursor:pointer;border:1px solid #334155;transition:all 0.15s;}
+  .options label:hover{background:#312e81;}
+  .options input{margin-right:8px;}
+  .num-input{background:#0c1424;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:10px;font-size:1em;width:160px;}
+  .feedback{margin-top:10px;padding:10px 14px;border-radius:6px;display:none;font-size:0.95em;}
+  .feedback.correct{background:#064e3b;color:#a7f3d0;border-left:4px solid #22c55e;display:block;}
+  .feedback.wrong{background:#7c2d12;color:#fed7aa;border-left:4px solid #ef4444;display:block;}
+  .controls{text-align:center;margin:30px 0;}
+  button{background:#a855f7;color:#fff;border:none;padding:12px 30px;font-size:1.1em;font-weight:bold;border-radius:8px;cursor:pointer;margin:5px;}
+  button:hover{background:#9333ea;}
+  button.reset{background:#94a3b8;color:#0f172a;}
+  #score{display:none;background:#312e81;border-radius:12px;padding:25px;text-align:center;margin-top:25px;}
+  #score h2{margin:0 0 10px;color:#fbbf24;font-size:2em;}
+  #score p{font-size:1.2em;color:#e9d5ff;}
+  .progress{position:sticky;top:0;background:#0c1424;padding:10px;text-align:center;font-weight:bold;z-index:10;border-bottom:1px solid #334155;}
+  .answered{border-left-color:#fbbf24!important;}
+  footer{text-align:center;padding:20px;color:#94a3b8;font-size:0.9em;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✅ Self-Graded Test — Stoichiometry</h1>
+  <p>3rd ESO · Physics &amp; Chemistry · Immediate feedback after each answer</p>
+</header>
+
+<div class="progress">Answered: <span id="progressNum">0</span> / <span id="totalNum">0</span></div>
+
+<main>
+
+<div class="intro">
+  <h2>Instructions</h2>
+  <p>Atomic masses you may need: H = 1, C = 12, N = 14, O = 16, Mg = 24.3, Cl = 35.5, Na = 23, Ca = 40, S = 32.</p>
+  <p>Read each question, type or select your answer, and click <b>Check</b>. Click <b>Show Final Score</b> at the end.</p>
+</div>
+
+<div id="quiz"></div>
+
+<div class="controls">
+  <button onclick="showScore()">Show Final Score</button>
+  <button class="reset" onclick="resetQuiz()">Reset Test</button>
+</div>
+
+<div id="score">
+  <h2 id="scoreVal">0 / 0</h2>
+  <p id="scoreMsg"></p>
+</div>
+
+</main>
+
+<footer>
+  <p>Once you score 70%+, try the worked-exercises sheet for extra practice.</p>
+</footer>
+
+<script>
+const questions = [
+  // ===== Concepts =====
+  {type:'mc', topic:'Reactions',
+    q:'In a chemical reaction…',
+    options:['Atoms are destroyed','Atoms are created','Atoms only rearrange','Atoms transform into other atoms'],
+    correct:2,
+    explain:'Atoms are neither created nor destroyed — they just rearrange to form new substances.'
+  },
+  {type:'mc', topic:'Lavoisier',
+    q:'The Law of Conservation of Mass (Lavoisier) states that…',
+    options:['Mass increases during a reaction','Total mass of reactants = total mass of products','Mass decreases during a reaction','Mass depends on temperature'],
+    correct:1,
+    explain:'Total mass is conserved: m(reactants) = m(products).'
+  },
+  {type:'mc', topic:'Proust',
+    q:'Proust\'s law of definite proportions states that…',
+    options:['Compounds always have variable composition','Atoms combine in fixed mass ratios','Mass of reactants exceeds products','Atoms always combine in 1:1 ratio'],
+    correct:1,
+    explain:'In a given compound, elements always combine in the same fixed mass ratio.'
+  },
+
+  // ===== Balancing =====
+  {type:'mc', topic:'Balancing',
+    q:'To balance an equation we can change…',
+    options:['The subscripts','The coefficients in front of formulas','The chemical symbols','Anything we want'],
+    correct:1,
+    explain:'Only coefficients (numbers in front) can be changed; changing subscripts would change the substance.'
+  },
+  {type:'mc', topic:'Balancing',
+    q:'Balance:  H₂ + O₂ → H₂O',
+    options:['1, 1, 1','2, 1, 2','2, 2, 2','1, 2, 1'],
+    correct:1,
+    explain:'2 H₂ + O₂ → 2 H₂O. (4 H and 2 O on each side.)'
+  },
+  {type:'mc', topic:'Balancing',
+    q:'Balance:  CH₄ + O₂ → CO₂ + H₂O',
+    options:['1, 1, 1, 1','1, 2, 1, 2','2, 2, 2, 2','1, 3, 1, 2'],
+    correct:1,
+    explain:'1 CH₄ + 2 O₂ → 1 CO₂ + 2 H₂O.'
+  },
+  {type:'mc', topic:'Balancing',
+    q:'Balance:  N₂ + H₂ → NH₃',
+    options:['1, 1, 1','1, 3, 2','2, 3, 1','1, 2, 2'],
+    correct:1,
+    explain:'1 N₂ + 3 H₂ → 2 NH₃ (2 N and 6 H on each side).'
+  },
+
+  // ===== Molar mass =====
+  {type:'num', topic:'Molar mass',
+    q:'Molar mass of H₂O? (g/mol)',
+    correct:18, tolerance:0.1,
+    explain:'2·1 + 16 = 18 g/mol.'
+  },
+  {type:'num', topic:'Molar mass',
+    q:'Molar mass of CO₂? (g/mol)',
+    correct:44, tolerance:0.1,
+    explain:'12 + 2·16 = 44 g/mol.'
+  },
+  {type:'num', topic:'Molar mass',
+    q:'Molar mass of O₂? (g/mol)',
+    correct:32, tolerance:0.1,
+    explain:'2·16 = 32 g/mol.'
+  },
+  {type:'num', topic:'Molar mass',
+    q:'Molar mass of C₄H₁₀ (butane)? (g/mol)',
+    correct:58, tolerance:0.1,
+    explain:'4·12 + 10·1 = 58 g/mol.'
+  },
+  {type:'num', topic:'Molar mass',
+    q:'Molar mass of MgO? (g/mol)',
+    correct:40.3, tolerance:0.2,
+    explain:'24.3 + 16 = 40.3 g/mol.'
+  },
+  {type:'num', topic:'Molar mass',
+    q:'Molar mass of NH₃ (ammonia)? (g/mol)',
+    correct:17, tolerance:0.1,
+    explain:'14 + 3·1 = 17 g/mol.'
+  },
+
+  // ===== Stoichiometry =====
+  {type:'num', topic:'Stoichiometry',
+    q:'Using 2 Mg + O₂ → 2 MgO. If 8 g of Mg react completely, how many g of O₂ are needed? (M: Mg=24.3, O=16)',
+    correct:5.27, tolerance:0.2,
+    explain:'48.6 g Mg → 32 g O₂. So 8 · 32 / 48.6 ≈ 5.27 g O₂.'
+  },
+  {type:'num', topic:'Stoichiometry',
+    q:'Using 2 Mg + O₂ → 2 MgO. How many g of MgO are produced from 8 g of Mg?',
+    correct:13.26, tolerance:0.3,
+    explain:'48.6 g Mg → 80.6 g MgO. So 8 · 80.6 / 48.6 ≈ 13.26 g MgO. (Check: 8 + 5.27 = 13.27 ✅)'
+  },
+  {type:'num', topic:'Stoichiometry',
+    q:'Using 2 NH₃ → N₂ + 3 H₂. How many grams of NH₃ decompose to produce 7 g of N₂?',
+    correct:8.5, tolerance:0.2,
+    explain:'34 g NH₃ → 28 g N₂. So 7 · 34 / 28 = 8.5 g NH₃.'
+  },
+  {type:'num', topic:'Stoichiometry',
+    q:'Same reaction (2 NH₃ → N₂ + 3 H₂). How many grams of H₂ are produced together with 7 g of N₂?',
+    correct:1.5, tolerance:0.2,
+    explain:'28 g N₂ → 6 g H₂. So 7 · 6 / 28 = 1.5 g H₂. (Check: 8.5 = 7 + 1.5 ✅)'
+  },
+  {type:'num', topic:'Stoichiometry',
+    q:'2 C₄H₁₀ + 13 O₂ → 8 CO₂ + 10 H₂O. How many g of CO₂ are produced from 29 g of butane?',
+    correct:88, tolerance:1,
+    explain:'116 g C₄H₁₀ → 352 g CO₂. 29 · 352 / 116 = 88 g CO₂.'
+  },
+
+  // ===== Conservation check =====
+  {type:'num', topic:'Conservation',
+    q:'In a reaction, 20 g of A react with 15 g of B to form C. What mass of C is produced? (in g)',
+    correct:35, tolerance:0.1,
+    explain:'Mass is conserved: 20 + 15 = 35 g of C.'
+  },
+  {type:'tf', topic:'Conservation',
+    q:'In a chemical reaction, the total mass can decrease if a gas is released.',
+    correct:false,
+    explain:'Mass is always conserved. If a gas escapes, its mass still counts! The total mass measured in a closed container would not change.'
+  }
+];
+
+const quiz = document.getElementById('quiz');
+document.getElementById('totalNum').textContent = questions.length;
+let answeredSet = new Set();
+let correctCount = 0;
+const correctMap = {};
+
+questions.forEach((q,i) => {
+  const div = document.createElement('div');
+  div.className = 'question';
+  div.id = 'q'+i;
+  let html = `<span class="qnum">Q${i+1}</span><span class="qtype">${q.topic}</span><div class="qtext">${q.q}</div>`;
+  if(q.type==='mc'){
+    html += '<div class="options">';
+    q.options.forEach((opt,j)=>{
+      html += `<label><input type="radio" name="q${i}" value="${j}"> ${opt}</label>`;
+    });
+    html += '</div>';
+  } else if(q.type==='tf'){
+    html += '<div class="options">';
+    html += `<label><input type="radio" name="q${i}" value="true"> TRUE</label>`;
+    html += `<label><input type="radio" name="q${i}" value="false"> FALSE</label>`;
+    html += '</div>';
+  } else if(q.type==='num'){
+    html += `<input type="number" step="any" class="num-input" id="num${i}" placeholder="Your answer">`;
+  }
+  html += `<div style="margin-top:10px;"><button onclick="checkAnswer(${i})">Check</button></div>`;
+  html += `<div class="feedback" id="fb${i}"></div>`;
+  div.innerHTML = html;
+  quiz.appendChild(div);
+});
+
+function checkAnswer(i){
+  const q = questions[i];
+  const fb = document.getElementById('fb'+i);
+  let isCorrect = false;
+  if(q.type==='mc'){
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if(!sel){fb.className='feedback wrong';fb.textContent='Please select an option.';return;}
+    isCorrect = (+sel.value === q.correct);
+  } else if(q.type==='tf'){
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if(!sel){fb.className='feedback wrong';fb.textContent='Please select TRUE or FALSE.';return;}
+    isCorrect = (sel.value==='true') === q.correct;
+  } else if(q.type==='num'){
+    const v = document.getElementById('num'+i).value;
+    if(v===''){fb.className='feedback wrong';fb.textContent='Please type a number.';return;}
+    isCorrect = Math.abs(parseFloat(v) - q.correct) <= q.tolerance;
+  }
+  if(!answeredSet.has(i)){
+    answeredSet.add(i);
+    document.getElementById('progressNum').textContent = answeredSet.size;
+    document.getElementById('q'+i).classList.add('answered');
+  }
+  if(correctMap[i]===undefined){
+    correctMap[i] = isCorrect;
+    if(isCorrect) correctCount++;
+  }
+  if(isCorrect){ fb.className='feedback correct'; fb.innerHTML = '✅ <b>Correct!</b><br>'+q.explain; }
+  else { fb.className='feedback wrong'; fb.innerHTML = '❌ <b>Not quite.</b><br>'+q.explain; }
+}
+
+function showScore(){
+  const total = questions.length;
+  const pct = Math.round(correctCount/total*100);
+  document.getElementById('scoreVal').textContent = `${correctCount} / ${total}  (${pct}%)`;
+  let msg;
+  if(pct>=90) msg = '🌟 Excellent! Stoichiometry mastered.';
+  else if(pct>=70) msg = '👍 Good work! Review what you missed.';
+  else if(pct>=50) msg = '🙂 You passed. Re-read the notes and try again.';
+  else msg = '📚 Go back to the interactive page and study notes, then retake the test.';
+  document.getElementById('scoreMsg').textContent = msg;
+  document.getElementById('score').style.display='block';
+  document.getElementById('score').scrollIntoView({behavior:'smooth'});
+}
+function resetQuiz(){ if(confirm('Reset the test?')) location.reload(); }
+</script>
+
+</body>
+</html>

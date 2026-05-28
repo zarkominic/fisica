@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gases — Self-Graded Test (3rd ESO)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;line-height:1.55;}
+  header{background:linear-gradient(135deg,#065f46,#064e3b);padding:30px 20px;text-align:center;border-bottom:3px solid #34d399;}
+  header h1{margin:0;font-size:2.1em;}
+  header p{margin:6px 0 0;color:#a7f3d0;}
+  main{max-width:900px;margin:0 auto;padding:25px 20px;}
+  .intro{background:#1e293b;border-radius:12px;padding:20px;margin-bottom:25px;}
+  .intro h2{color:#34d399;margin-top:0;}
+  .question{background:#1e293b;border-radius:12px;padding:20px;margin-bottom:18px;border-left:5px solid #34d399;box-shadow:0 4px 14px rgba(0,0,0,0.3);}
+  .qnum{display:inline-block;background:#34d399;color:#064e3b;font-weight:bold;padding:3px 10px;border-radius:5px;font-size:0.85em;margin-bottom:8px;}
+  .qtype{display:inline-block;background:#0ea5e9;color:#fff;font-weight:bold;padding:3px 10px;border-radius:5px;font-size:0.75em;margin-left:6px;}
+  .qtext{font-size:1.05em;margin:8px 0 14px;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .options label{background:#0c1424;padding:10px 14px;border-radius:8px;cursor:pointer;border:1px solid #334155;transition:all 0.15s;}
+  .options label:hover{background:#1e3a8a;}
+  .options input{margin-right:8px;}
+  .num-input{background:#0c1424;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:10px;font-size:1em;width:160px;}
+  .feedback{margin-top:10px;padding:10px 14px;border-radius:6px;display:none;font-size:0.95em;}
+  .feedback.correct{background:#064e3b;color:#a7f3d0;border-left:4px solid #22c55e;display:block;}
+  .feedback.wrong{background:#7c2d12;color:#fed7aa;border-left:4px solid #ef4444;display:block;}
+  .controls{text-align:center;margin:30px 0;}
+  button{background:#34d399;color:#064e3b;border:none;padding:12px 30px;font-size:1.1em;font-weight:bold;border-radius:8px;cursor:pointer;margin:5px;}
+  button:hover{background:#10b981;}
+  button.reset{background:#94a3b8;color:#0f172a;}
+  #score{display:none;background:#1e3a8a;border-radius:12px;padding:25px;text-align:center;margin-top:25px;box-shadow:0 6px 20px rgba(0,0,0,0.4);}
+  #score h2{margin:0 0 10px;color:#fbbf24;font-size:2em;}
+  #score p{font-size:1.2em;color:#dbeafe;}
+  .progress{position:sticky;top:0;background:#0c1424;padding:10px;text-align:center;font-weight:bold;z-index:10;border-bottom:1px solid #334155;}
+  .answered{border-left-color:#fbbf24!important;}
+  footer{text-align:center;padding:20px;color:#94a3b8;font-size:0.9em;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✅ Self-Graded Test — Gases</h1>
+  <p>3rd ESO · Physics &amp; Chemistry · Immediate feedback after each answer</p>
+</header>
+
+<div class="progress">Answered: <span id="progressNum">0</span> / <span id="totalNum">0</span></div>
+
+<main>
+
+<div class="intro">
+  <h2>Instructions</h2>
+  <p>Read each question carefully. Select or type your answer and click <b>Check</b>. You'll get immediate feedback. When you finish, click <b>Show Final Score</b> at the bottom.</p>
+  <p><b>Pass mark:</b> 50%. <b>Recommended:</b> aim for 70%+ before the class exam.</p>
+</div>
+
+<div id="quiz"></div>
+
+<div class="controls">
+  <button onclick="showScore()">Show Final Score</button>
+  <button class="reset" onclick="resetQuiz()">Reset Test</button>
+</div>
+
+<div id="score">
+  <h2 id="scoreVal">0 / 0</h2>
+  <p id="scoreMsg"></p>
+</div>
+
+</main>
+
+<footer>
+  <p>Once you score 70%+, try the worked-exercises sheet for extra practice.</p>
+</footer>
+
+<script>
+const questions = [
+  // ===== STATES OF MATTER =====
+  {type:'mc', topic:'States of matter',
+    q:'Which state of matter takes the shape AND the volume of its container?',
+    options:['Solid','Liquid','Gas','None of them'],
+    correct:2,
+    explain:'Only gases fill the whole container they are in, because the particles are far apart and move freely.'
+  },
+  {type:'mc', topic:'States of matter',
+    q:'Which property describes a solid?',
+    options:['No fixed shape, no fixed volume','Fixed shape and fixed volume','Variable shape, fixed volume','Fixed shape, variable volume'],
+    correct:1,
+    explain:'Solids have both a fixed shape and a fixed volume because their particles are tightly packed and only vibrate.'
+  },
+
+  // ===== KMT =====
+  {type:'mc', topic:'KMT',
+    q:'According to the Kinetic Molecular Theory, what does temperature measure?',
+    options:['The total mass of the gas','The number of particles','The average kinetic energy of the particles','The size of the particles'],
+    correct:2,
+    explain:'Temperature measures the AVERAGE kinetic energy of the gas particles. Higher T → faster particles.'
+  },
+  {type:'mc', topic:'KMT',
+    q:'What happens at absolute zero (0 K)?',
+    options:['Particles move at maximum speed','Particles stop moving','Particles fuse together','Volume becomes infinite'],
+    correct:1,
+    explain:'Absolute zero is the temperature at which all molecular motion stops. It is the lowest possible temperature.'
+  },
+  {type:'mc', topic:'KMT',
+    q:'According to KMT, what causes pressure in a gas?',
+    options:['The weight of the gas','Collisions of particles against the walls','Friction between particles','The temperature of the walls'],
+    correct:1,
+    explain:'Pressure comes from particles colliding with the walls of the container. More/stronger collisions = more pressure.'
+  },
+
+  // ===== PRESSURE =====
+  {type:'mc', topic:'Pressure',
+    q:'What is the SI unit of pressure?',
+    options:['atm','mmHg','Pa','bar'],
+    correct:2,
+    explain:'The SI unit is the pascal (Pa) = N/m². The other units are commonly used but are not SI units.'
+  },
+  {type:'mc', topic:'Pressure',
+    q:'Pressure is defined as…',
+    options:['Force × Area','Force / Area','Mass / Volume','Energy / Time'],
+    correct:1,
+    explain:'P = F / S. Pressure is force divided by the area over which it acts.'
+  },
+  {type:'tf', topic:'Pressure',
+    q:'Atmospheric pressure increases with altitude.',
+    correct:false,
+    explain:'It DECREASES with altitude because there is less air pressing down on you as you go higher.'
+  },
+
+  // ===== UNIT CONVERSIONS =====
+  {type:'num', topic:'Units',
+    q:'Express 2 atm in Pa. (Answer in Pa, round to whole number)',
+    correct:202650, tolerance:50,
+    explain:'1 atm = 101 325 Pa → 2 · 101 325 = 202 650 Pa.'
+  },
+  {type:'num', topic:'Units',
+    q:'Express 1520 mmHg in atm. (Round to 1 decimal)',
+    correct:2.0, tolerance:0.1,
+    explain:'1 atm = 760 mmHg → 1520 / 760 = 2.0 atm.'
+  },
+  {type:'num', topic:'Units',
+    q:'Convert 27 °C to kelvin.',
+    correct:300, tolerance:0.5,
+    explain:'T(K) = t(°C) + 273 → 27 + 273 = 300 K.'
+  },
+  {type:'num', topic:'Units',
+    q:'Convert 373 K to °C.',
+    correct:100, tolerance:0.5,
+    explain:'t(°C) = T(K) − 273 → 373 − 273 = 100 °C (boiling point of water).'
+  },
+  {type:'num', topic:'Units',
+    q:'Convert 950 mbar to Pa.',
+    correct:95000, tolerance:50,
+    explain:'1 mbar = 100 Pa → 950 · 100 = 95 000 Pa.'
+  },
+  {type:'mc', topic:'Units',
+    q:'Which equivalence is CORRECT?',
+    options:['1 atm = 1013 Pa','1 atm = 760 mmHg','1 atm = 100 mbar','1 atm = 76 cmHg = 100 000 Pa exactly'],
+    correct:1,
+    explain:'1 atm = 760 mmHg = 101 325 Pa = 1013 mbar.'
+  },
+
+  // ===== BOYLE =====
+  {type:'mc', topic:'Boyle',
+    q:'Boyle\'s law applies when which variable is kept constant?',
+    options:['Pressure','Volume','Temperature','Mass'],
+    correct:2,
+    explain:'Boyle\'s law: at constant T, P and V are inversely proportional.'
+  },
+  {type:'mc', topic:'Boyle',
+    q:'In Boyle\'s law, P and V are…',
+    options:['Directly proportional','Inversely proportional','Independent','Equal'],
+    correct:1,
+    explain:'P · V = constant → if one increases, the other decreases.'
+  },
+  {type:'num', topic:'Boyle',
+    q:'A gas at 2 atm and 6 L is compressed (at constant T) to 1.5 L. What is the new pressure (in atm)?',
+    correct:8, tolerance:0.05,
+    explain:'P₁V₁ = P₂V₂ → 2·6 = P₂·1.5 → P₂ = 12/1.5 = 8 atm.'
+  },
+  {type:'num', topic:'Boyle',
+    q:'A gas occupies 1 L at 12 atm. What volume will it occupy at 4 atm (constant T)? (Answer in L)',
+    correct:3, tolerance:0.05,
+    explain:'P₁V₁ = P₂V₂ → 12·1 = 4·V₂ → V₂ = 3 L.'
+  },
+
+  // ===== CHARLES =====
+  {type:'mc', topic:'Charles',
+    q:'Charles\'s law (V–T) holds at constant…',
+    options:['Volume','Pressure','Temperature','Density'],
+    correct:1,
+    explain:'V/T = constant only if pressure (and amount of gas) stays constant.'
+  },
+  {type:'tf', topic:'Charles',
+    q:'In Charles\'s law calculations, temperature can be in °C.',
+    correct:false,
+    explain:'Temperature MUST be in kelvin (K). Otherwise V/T will not give a constant value (and would even divide by zero or a negative number at low t).'
+  },
+  {type:'num', topic:'Charles',
+    q:'A balloon contains 3 L of gas at 300 K. What volume does it have at 400 K (constant P)? (in L)',
+    correct:4, tolerance:0.05,
+    explain:'V₁/T₁ = V₂/T₂ → 3/300 = V₂/400 → V₂ = 4 L.'
+  },
+
+  // ===== GAY-LUSSAC =====
+  {type:'mc', topic:'Gay-Lussac',
+    q:'Gay-Lussac\'s law (P–T) holds at constant…',
+    options:['Pressure','Volume','Temperature','Mass'],
+    correct:1,
+    explain:'P/T = constant when the volume of the container is fixed.'
+  },
+  {type:'num', topic:'Gay-Lussac',
+    q:'A gas in a sealed container is at 1 atm and 300 K. What pressure (in atm) at 600 K?',
+    correct:2, tolerance:0.05,
+    explain:'P₁/T₁ = P₂/T₂ → 1/300 = P₂/600 → P₂ = 2 atm.'
+  },
+  {type:'num', topic:'Gay-Lussac',
+    q:'Fire extinguisher: a 3-L CO₂ cylinder withstands up to 15 atm. At 27 °C it is at 2 atm. Maximum temperature before it bursts (in K)?',
+    correct:2250, tolerance:5,
+    explain:'V is constant → Gay-Lussac. T₁ = 300 K. 2/300 = 15/T₂ → T₂ = 2250 K.'
+  },
+
+  // ===== COMBINED =====
+  {type:'mc', topic:'Combined',
+    q:'Which formula is the combined gas law?',
+    options:['P₁V₁ = P₂V₂','V₁/T₁ = V₂/T₂','P₁V₁/T₁ = P₂V₂/T₂','P/T = const'],
+    correct:2,
+    explain:'The combined gas law: P₁V₁/T₁ = P₂V₂/T₂. It works when P, V, and T all change.'
+  },
+
+  // ===== APPLICATION =====
+  {type:'mc', topic:'Application',
+    q:'Why does a sealed plastic bottle get crushed when you take it from a warm place to a cold place?',
+    options:['The plastic shrinks','The gas inside loses pressure → atmospheric pressure pushes it in','The mass of the gas decreases','Gravity changes'],
+    correct:1,
+    explain:'Gay-Lussac: when T drops at (almost) constant V, P inside drops. Atmospheric pressure outside is higher, so it pushes the walls inward.'
+  },
+  {type:'mc', topic:'Application',
+    q:'Why does the air inside a bicycle tyre heat up when you pump it?',
+    options:['The pump is hot','Compressing the gas (less V) at almost constant amount means molecules collide more, raising T','The rubber heats up','Magic'],
+    correct:1,
+    explain:'When you compress a gas quickly, its particles concentrate and collide more often: temperature (and pressure) rise.'
+  }
+];
+
+const quiz = document.getElementById('quiz');
+document.getElementById('totalNum').textContent = questions.length;
+let answeredSet = new Set();
+
+questions.forEach((q,i) => {
+  const div = document.createElement('div');
+  div.className = 'question';
+  div.id = 'q'+i;
+  let html = `<span class="qnum">Q${i+1}</span><span class="qtype">${q.topic}</span><div class="qtext">${q.q}</div>`;
+  if(q.type==='mc'){
+    html += '<div class="options">';
+    q.options.forEach((opt,j)=>{
+      html += `<label><input type="radio" name="q${i}" value="${j}"> ${opt}</label>`;
+    });
+    html += '</div>';
+  } else if(q.type==='tf'){
+    html += '<div class="options">';
+    html += `<label><input type="radio" name="q${i}" value="true"> TRUE</label>`;
+    html += `<label><input type="radio" name="q${i}" value="false"> FALSE</label>`;
+    html += '</div>';
+  } else if(q.type==='num'){
+    html += `<input type="number" step="any" class="num-input" id="num${i}" placeholder="Your answer">`;
+  }
+  html += `<div style="margin-top:10px;"><button onclick="checkAnswer(${i})">Check</button></div>`;
+  html += `<div class="feedback" id="fb${i}"></div>`;
+  div.innerHTML = html;
+  quiz.appendChild(div);
+});
+
+let correctCount = 0;
+const correctMap = {};
+
+function checkAnswer(i){
+  const q = questions[i];
+  const fb = document.getElementById('fb'+i);
+  let userAns, isCorrect = false;
+
+  if(q.type==='mc'){
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if(!sel){fb.className='feedback wrong';fb.textContent='Please select an option.';return;}
+    userAns = +sel.value;
+    isCorrect = (userAns===q.correct);
+  } else if(q.type==='tf'){
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if(!sel){fb.className='feedback wrong';fb.textContent='Please select TRUE or FALSE.';return;}
+    userAns = sel.value==='true';
+    isCorrect = (userAns===q.correct);
+  } else if(q.type==='num'){
+    const v = document.getElementById('num'+i).value;
+    if(v===''){fb.className='feedback wrong';fb.textContent='Please type a number.';return;}
+    userAns = parseFloat(v);
+    isCorrect = Math.abs(userAns - q.correct) <= q.tolerance;
+  }
+
+  // Update tracker
+  if(!answeredSet.has(i)){
+    answeredSet.add(i);
+    document.getElementById('progressNum').textContent = answeredSet.size;
+    document.getElementById('q'+i).classList.add('answered');
+  }
+  // Update correct count (only first check counts)
+  if(correctMap[i]===undefined){
+    correctMap[i] = isCorrect;
+    if(isCorrect) correctCount++;
+  }
+
+  if(isCorrect){
+    fb.className='feedback correct';
+    fb.innerHTML = '✅ <b>Correct!</b><br>'+q.explain;
+  } else {
+    fb.className='feedback wrong';
+    fb.innerHTML = '❌ <b>Not quite.</b><br>'+q.explain;
+  }
+}
+
+function showScore(){
+  const total = questions.length;
+  const sc = correctCount;
+  const pct = Math.round(sc/total*100);
+  document.getElementById('scoreVal').textContent = `${sc} / ${total}  (${pct}%)`;
+  let msg;
+  if(pct>=90) msg = '🌟 Excellent! You really know your gases.';
+  else if(pct>=70) msg = '👍 Good work! Review the questions you missed.';
+  else if(pct>=50) msg = '🙂 You passed. Re-read the notes, then try again.';
+  else msg = '📚 Don\'t worry — go back to the study notes and the interactive page, then retake the test.';
+  document.getElementById('scoreMsg').textContent = msg;
+  document.getElementById('score').style.display='block';
+  document.getElementById('score').scrollIntoView({behavior:'smooth'});
+}
+
+function resetQuiz(){
+  if(confirm('Reset the test and clear all answers?')) location.reload();
+}
+</script>
+
+</body>
+</html>
